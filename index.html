@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070b15" />
+    <title>Event Horizon · 黑洞实验室</title>
+  </head>
+  <body>
+    <main>
+      <canvas tabindex="0" aria-label="黑洞观测。拖动或用方向键环绕，滚轮、双指或加减键缩放。"></canvas>
+      <div class="camera-fade" data-camera-fade aria-hidden="true"></div>
+      <header>
+        <span class="eyebrow">EH / 09 · OBSERVATORY</span>
+        <h1>Event Horizon</h1>
+        <p>黑洞实验室</p>
+        <nav class="toolbar" aria-label="观测工具">
+          <label class="mode-picker">主模式<select data-main-mode disabled>
+            <option value="observation">Observation</option><option value="exploration">Exploration</option>
+            <option value="probe">Probe</option><option value="cinematic">Cinematic</option>
+          </select></label>
+          <button type="button" data-open-settings>设置</button>
+          <button type="button" data-fullscreen>全屏</button>
+          <button type="button" data-screenshot>截图</button>
+          <button type="button" data-record disabled>录制 WebM</button>
+          <button type="button" data-open-guide>科学导览</button>
+          <button type="button" data-hide-hud>隐藏 HUD</button>
+          <details class="audio" data-audio>
+            <summary>环境音</summary>
+            <div class="panel audio-controls">
+              <div class="playback">
+                <button type="button" data-audio-power disabled>开启环境音</button>
+                <button type="button" data-audio-mute disabled>静音</button>
+              </div>
+              <label>音量<input type="range" min="0" max="1" step="0.05" value="0.35" data-audio-volume></label>
+              <p data-audio-status aria-live="polite">已关闭</p>
+              <small>原创合成氛围 · 艺术配乐</small>
+            </div>
+          </details>
+        </nav>
+        <form>
+        <aside class="lab panel" aria-label="参数实验室">
+        <details class="lab-drawer" open>
+          <summary>参数实验室</summary>
+        <details>
+          <summary>观测参数</summary>
+          <div class="controls">
+            <label>视场角<input type="range" name="fov" min="38" max="75" value="53"></label>
+            <small>物理参考 · 非旋转黑洞</small>
+            <label>质量尺度<input type="range" name="scale" min="0.55" max="1.35" step="0.01" value="1"></label>
+            <label>观察距离（Rₛ）<input type="range" name="distance" step="0.1" value="13"></label>
+            <label>模型<select name="model"><option value="schwarzschild">史瓦西</option><option value="rotating">旋转视觉近似</option></select></label>
+            <label>旋转偏置<input type="range" name="spin" step="0.05" value="0.35"></label>
+            <small data-spin-note>旋转偏置仅用于视觉近似。</small>
+            <small>视觉设置</small>
+            <label>泛光<input type="range" name="bloom" step="0.05" value="0"></label>
+            <label>镜头光学<input type="checkbox" name="optics"></label>
+            <label>远景星尘<input type="checkbox" name="dust" checked></label>
+            <label>星空密度<input type="range" name="density" min="0" max="1" step="0.01" value="1"></label>
+            <label>曝光<input type="range" name="exposure" min="0.45" max="1.8" step="0.05" value="1"></label>
+            <label>引力透镜<input type="checkbox" name="lensed" checked></label>
+            <label>光线画质<select name="steps"><option value="64">低</option><option value="96" selected>中</option><option value="144">高</option></select></label>
+          </div>
+        </details>
+        <details>
+          <summary>吸积盘</summary>
+          <div class="controls">
+            <label>内半径（Rₛ）<input type="range" name="inner" min="2.8" max="5" step="0.1" value="3.2"></label>
+            <label>外半径（Rₛ）<input type="range" name="outer" min="5.2" max="11" step="0.1" value="8.7"></label>
+            <label>倾角（°）<input type="range" name="tilt" min="0" max="86" value="78"></label>
+            <label>亮度<input type="range" name="brightness" min="0" max="2" step="0.05" value="1"></label>
+            <label>温度色调<input type="range" name="heat" min="0.35" max="1.5" step="0.05" value="1"></label>
+            <label>湍流<input type="range" name="turbulence" min="0" max="1" step="0.05" value="0.8"></label>
+            <label>旋转速度<input type="range" name="speed" min="0" max="2" step="0.1" value="1"></label>
+            <label>纹理画质<select name="octaves"><option value="2">低</option><option value="3">中</option><option value="4" selected>高</option></select></label>
+          </div>
+        </details>
+        </details>
+        </aside>
+        <aside class="science panel" aria-label="科学信息">
+          <span class="eyebrow">观测日志</span>
+          <h2>光线与阴影</h2>
+          <p data-model-note>史瓦西模型 · 非旋转黑洞</p>
+          <p>星光与盘面成像由同一条反向光路计算。中央阴影对应背景光被捕获的方向。</p>
+          <span data-distance></span>
+        </aside>
+        <section class="transport panel" aria-label="播放与镜头">
+        <div class="playback">
+          <button type="button" data-playback>暂停动画</button>
+          <label>时间倍率<select name="timeRate"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+        </div>
+        <details>
+          <summary>镜头</summary>
+          <div class="controls">
+            <label>自动环绕<input type="checkbox" name="autoRotate"></label>
+            <label>电影预设<select name="shot">
+              <option value="deepSpace">Deep Space</option>
+              <option value="approach">Approach</option>
+              <option value="orbit">Orbit</option>
+              <option value="diskEdge">Disk Edge</option>
+              <option value="photonRing">Photon Ring</option>
+              <option value="descent">Horizon Descent</option>
+            </select></label>
+            <div class="playback">
+              <button type="button" data-start-shot>开始镜头</button>
+              <button type="button" data-stop-shot disabled>停止镜头</button>
+              <button type="button" data-reset-camera>重置视角</button>
+            </div>
+            <p class="camera-help">拖动环绕 · 滚轮或双指缩放</p>
+          </div>
+        </details>
+        <span class="camera-caption" data-camera-caption aria-live="polite">自由观察</span>
+        </section>
+        <dialog class="panel" data-settings-dialog>
+          <h2>观测设置</h2>
+          <label>减少动态效果<input type="checkbox" name="reduceMotion"></label>
+          <label>收藏名称<input name="sceneName" type="text" maxlength="40" placeholder="场景名称"></label>
+          <div class="playback">
+            <button type="button" data-save-scene>收藏当前场景</button>
+            <button type="button" data-reset-settings>恢复默认</button>
+          </div>
+          <label>场景收藏<select data-scenes></select></label>
+          <button type="button" data-load-scene disabled>载入收藏</button>
+          <button type="button" data-rename-scene disabled>重命名</button>
+          <button type="button" data-update-scene disabled>覆盖收藏</button>
+          <button type="button" data-delete-scene disabled>删除收藏</button>
+          <label>截图水印<input type="checkbox" data-watermark></label>
+          <button type="button" data-export-settings>导出 JSON</button>
+          <label>导入 JSON<input type="file" accept=".json,application/json" data-import-settings></label>
+          <button type="button" data-close-settings>关闭设置</button>
+          <p data-settings-note aria-live="polite"></p>
+        </dialog>
+        </form>
+        <dialog class="panel" data-guide-dialog aria-label="科学导览">
+          <h2>科学导览</h2>
+          <label>主题<select data-topic></select></label>
+          <p data-explanation></p>
+          <button type="button" data-show-topic>观察此现象</button>
+          <hr>
+          <label>场景预设<select data-preset></select></label>
+          <button type="button" data-load-preset>载入预设</button>
+          <button type="button" data-close-guide>关闭导览</button>
+        </dialog>
+        <aside class="intro panel" data-intro hidden>
+          <p>拖动环绕黑洞，滚轮或双指缩放。打开「科学导览」可查看现象与模型说明。</p>
+          <button type="button">跳过引导</button>
+        </aside>
+        <aside class="flight panel" data-flight hidden aria-label="深空飞行">
+          <h2>深空探索 <span class="eyebrow">FLIGHT SYSTEM</span></h2>
+          <p data-telemetry></p>
+          <p data-flight-safety></p>
+          <div class="playback">
+            <button type="button" data-flight-lock>锁定鼠标</button>
+            <button type="button" data-flight-reset>复位 R</button>
+            <button type="button" data-return-observation>返回观测</button>
+          </div>
+          <small>WASD 平移 · Space/Ctrl 升降 · Q/E 滚转 · Shift 加力 · 拖动转向</small>
+          <details open>
+            <summary>驾驶与环境</summary>
+            <label>巡航速度上限（单位/秒）<input type="range" data-flight-speed min="0.5" max="36" step="0.5" value="8"></label>
+            <label>第三人称<input type="checkbox" data-chase checked></label>
+            <label>跟随距离<input type="range" data-chase-range min="2.5" max="9" step="0.1" value="4.2"></label>
+            <button type="button" data-chase-reset>回正跟随镜头</button><small> Shift + 拖动环绕探测器</small>
+            <label>深空区域<select data-region>
+              <option value="void">Empty Void</option><option value="stellar" selected>Stellar Field</option>
+              <option value="nebula">Nebula Passage</option><option value="accretion">Accretion Approach</option>
+              <option value="deep">Deep Observation</option>
+            </select></label>
+            <label>星云密度<input type="range" data-nebula-density min="0" max="1.5" step="0.05" value="0.8"></label>
+            <label>星云亮度<input type="range" data-nebula-light min="0" max="2" step="0.05" value="1"></label>
+            <label>星云范围<input type="range" data-nebula-size min="0.5" max="2" step="0.05" value="1"></label>
+            <label>星云色调<input type="color" data-nebula-color value="#6a8fee"></label>
+            <label>星云画质<select data-nebula-quality><option value="0">关闭</option><option value="2">低</option><option value="4" selected>高</option></select></label>
+          </details>
+          <details>
+            <summary>自动巡航</summary>
+            <label>航线<select data-route></select></label>
+            <label>航线倍率<input type="range" data-route-speed min="0.5" max="3" step="0.5" value="1"></label>
+            <div class="playback">
+              <button type="button" data-cruise-start>开始巡航</button><button type="button" data-cruise-pause disabled>暂停巡航</button><button type="button" data-cruise-stop disabled>结束巡航</button>
+            </div>
+          </details>
+          <details>
+            <summary>导航与航点</summary>
+            <label>导航目标<select data-target></select></label>
+            <label>航点名称<input type="text" data-waypoint-name maxlength="40"></label>
+            <div class="playback">
+              <button type="button" data-waypoint-save>保存当前位置</button><button type="button" data-waypoint-rename>重命名航点</button>
+              <button type="button" data-waypoint-delete>删除航点</button><button type="button" data-waypoint-export>导出航点</button>
+            </div>
+            <p data-waypoint-note aria-live="polite"></p>
+          </details>
+          <div class="playback" data-approach-actions hidden>
+            <button type="button" data-approach-continue>继续观察</button><button type="button" data-approach-safe>返回安全点</button>
+          </div>
+        </aside>
+        <span class="navigation" data-navigation hidden></span>
+        <div class="compass" data-compass aria-label="世界坐标罗盘" hidden><span>X</span><span>Y</span><span>Z</span></div>
+      </header>
+      <footer>
+        <span role="status">正在初始化观测画布…</span>
+        <span data-performance>采样帧率中</span>
+      </footer>
+      <button class="restore-hud" type="button" data-show-hud hidden>显示 HUD</button>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
